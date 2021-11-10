@@ -5,6 +5,8 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi"
+	"github.com/nelbermora/go-oracle-sample/internal/model"
+	"github.com/nelbermora/go-oracle-sample/internal/service"
 )
 
 func setupHandlers(router chi.Router) {
@@ -27,12 +29,15 @@ func endpointController(rw http.ResponseWriter, r *http.Request) {
 		Tambien se general las respuestas a cada peticion
 		El alcance de este ejemplo es solo demostrar el funcionamiento de la capa web o http a traves de go chi
 	*/
-	// para efectos ilustrativos se define aqui mismo un modelo de respuesta
-	type responseModel struct {
-		Message string `json:"message"`
-	}
+	// para efectos ilustrativos se define un modelo que sera nuestra respuesta
 	// se crea el objeto que vamos a responder
-	response := responseModel{Message: "ok"}
+	var response model.Response
+	message, err := service.DummyFunc()
+	if err != nil {
+		response.Message = "Error al consultar DB"
+	} else {
+		response.Message = message
+	}
 	// se añaden los headers correspondientes y el status de la respuesta
 	rw.Header().Add("Content-Type", "application/json")
 	rw.WriteHeader(200)
